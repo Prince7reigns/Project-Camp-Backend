@@ -1,0 +1,15 @@
+{
+  "name": "backend-pro",
+  "version": "1.0.0",
+  "description": "a project management app for learn",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "author": "Prince Yadav",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "3.6.2"
+  }
+}
