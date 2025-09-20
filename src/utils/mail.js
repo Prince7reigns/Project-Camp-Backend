@@ -1,4 +1,47 @@
 import Mailgen from "mailgen";
+import nodemailer from "nodemailer"
+
+const sendMail = async(options) =>{
+    const mailgen = new Mailgen({
+         theme: 'default',
+    product: {
+        // Appears in header & footer of e-mails
+        name: 'Task Manager',
+        link: 'https://taskmanager.com'
+        // Optional product logo
+        // logo: 'https://mailgen.js/img/logo.png'
+    }
+    })
+
+    const emailTextual = mailgen.generatePlaintext(options.mailgenContent)
+    const emailHtml = mailgen.generatePlaintext(options.mailgenContent)
+
+    const  transporter = nodemailer.createTransport({
+        host:process.env.MAILTRAP_SMTP_HOST,
+        port:process.env.MAILTRAP_SMTP_PORT,
+        auth:{
+            user:process.env.MAILTRAP_SMTP_USER,
+            pass:process.env.MAILTRAP_SMTP_PASS
+        }
+    })
+
+    const mail = {
+        from:"prinsyadac@gmail.com",
+        to:options.email,
+        subject:options.subject,
+        text:emailTextual,
+        html:emailHtml
+    }
+
+    try {
+        await transporter.sendMail(mail)
+    } catch (error) {
+       console.error("Email service failed siliently make sure that you have provided your MAILTRAP credentials in the .env file") 
+       console.error("Error" , error)
+    }
+}
+
+//TODO:PRint optins 
 
 const emailVerificationMailgenContent = (username,verficationUrl) =>{
     return {
@@ -38,5 +81,6 @@ const forgotPasswordMailgenContent = (username,passwordResetUrl) =>{
 
 export {
     forgotPasswordMailgenContent,
-    emailVerificationMailgenContent
+    emailVerificationMailgenContent,
+    sendMail
 }
