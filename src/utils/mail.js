@@ -14,7 +14,7 @@ const sendMail = async(options) =>{
     })
 
     const emailTextual = mailgen.generatePlaintext(options.mailgenContent)
-    const emailHtml = mailgen.generatePlaintext(options.mailgenContent)
+    const emailHtml = mailgen.generate(options.mailgenContent)
 
     const  transporter = nodemailer.createTransport({
         host:process.env.MAILTRAP_SMTP_HOST,
