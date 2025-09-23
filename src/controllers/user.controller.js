@@ -54,8 +54,6 @@ const registerUser = asyncHandler(async(req,res)=>{
 
    const {unHashedToken, hashedToken, tokenExpiry} = user.generateTemporaryToken()
 
-   const {accessToken,refreshToken} = generateAccessAndRefereshTokens(user._id)
-
     user.emailVerificationToken=hashedToken
     user.emailVerificationExpiry=tokenExpiry
 
@@ -91,5 +89,59 @@ const registerUser = asyncHandler(async(req,res)=>{
       )
 
 })
+
+const login = asyncHandler(async(req,res)=>{
+
+    const {username,email,password} = req.body
+
+    if(!username || ! email){
+        throw new ApiError(400,"Username or email is required")
+    }
+
+    const user = await User.findOne(
+        {
+            $or: [{email} , {username}]
+        }
+    )
+
+    if(!user){
+        throw new ApiError(400,"User does noy exsites")
+    }
+
+    const isPasswordCorrect = await user.isPasswordCorrect()
+
+    if(!isPasswordCorrect){
+        throw new ApiError(400,"Invailid credentials")
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
+        user._id,
+      );
+    
+      const loggedInUser = await User.findById(user._id).select(
+        "-password -refreshToken -emailVerificationToken -emailVerificationExpiry",
+      );
+    
+      const options = {
+        httpOnly: true,
+        secure: true,
+      };
+    
+      return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+          new ApiResponse(
+            200,
+            {
+              user: loggedInUser,
+              accessToken,
+              refreshToken,
+            },
+            "User logged in successfully",
+          ),
+        );
+    });
 
 export {registerUser};
