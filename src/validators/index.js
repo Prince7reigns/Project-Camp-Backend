@@ -1,5 +1,4 @@
-import {body} from "express-validation"
-
+import { body, validationResult } from "express-validator";
 
 const userRegisterValidator = () =>{
      return [
@@ -27,6 +26,19 @@ const userRegisterValidator = () =>{
      ]
 }
 
+const userLoginValidator = () =>{
+     return [
+          body("email")
+            .isEmail()
+            .optional()
+            .withMessage("email is invalid"),
+          body("password")
+            .isEmpty()
+            .withMessage("password is required")
+     ]
+}
+
 export {
-    userRegisterValidator
+    userRegisterValidator,
+    userLoginValidator
 }

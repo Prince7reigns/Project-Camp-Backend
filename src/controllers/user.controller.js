@@ -108,7 +108,7 @@ const login = asyncHandler(async(req,res)=>{
         throw new ApiError(400,"User does noy exsites")
     }
 
-    const isPasswordCorrect = await user.isPasswordCorrect()
+    const isPasswordCorrect = await user.isPasswordCorrect(password)
 
     if(!isPasswordCorrect){
         throw new ApiError(400,"Invailid credentials")
@@ -144,4 +144,6 @@ const login = asyncHandler(async(req,res)=>{
         );
     });
 
-export {registerUser};
+export {registerUser,
+    login
+};
